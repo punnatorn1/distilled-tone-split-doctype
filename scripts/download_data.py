@@ -1,10 +1,16 @@
-"""Download the final study's training data from this repository's GitHub release and unpack it into data/.
+"""Download the data attempt 14 reads from the two GitHub releases and unpack it into data/.
 
-Run from the repository root:  uv run python scripts/download_data.py
-(plain `python` works too: it uses the standard library only)
+Run from the repository root:  python scripts/download_data.py
+(it uses the standard library only, so any Python 3.10+ works)
 
-Downloads final_study_data.zip (79 MB), unpacks its 53 files into data/, and checks each against the sha256 in
-MANIFEST.txt. config.py then finds data/ automatically. Run it again to re-check; files already correct are kept.
+Two parts, each a zip with a manifest of sha256 checksums:
+  1. final_study_data.zip (79 MB, 53 files): the meeting panels, corpus, labels and economic vintages, from the release
+     data-2026-10-18 of the original repository (fed-news-forecasting-final); manifest MANIFEST.txt.
+  2. split_tone_data.zip (40 MB, 7 files): the Haiku teacher probabilities, the distilled reader's sentence
+     scores and document tones, and the two other readers' document tones that fix the common meetings, from the
+     release data-2026-10-31 of this repository; manifest MANIFEST_SPLIT_TONE.txt.
+Every file is checked against its manifest. config.py then finds data/ automatically. Run it again to re-check; a
+part whose files are already correct is not downloaded again. docs/DATA.md describes every file.
 """
 import argparse
 import hashlib
@@ -14,9 +20,13 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
-URL = ("https://github.com/taminggg1-cmyk/fed-news-forecasting-final/releases/download/data-2026-10-18/"
-       "final_study_data.zip")
-TOP = "fed_news_data/"  # folder name inside the zip
+PARTS = [  # (zip url, manifest name inside the zip)
+    ("https://github.com/taminggg1-cmyk/fed-news-forecasting-final/releases/download/data-2026-10-18/"
+     "final_study_data.zip", "MANIFEST.txt"),
+    ("https://github.com/taminggg1-cmyk/distilled-tone-split-doctype/releases/download/data-2026-10-31/"
+     "split_tone_data.zip", "MANIFEST_SPLIT_TONE.txt"),
+]
+TOP = "fed_news_data/"  # folder name inside both zips
 
 
 def sha256(path: Path) -> str:
@@ -28,17 +38,17 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def manifest(dest: Path) -> dict[str, str]:
-    """{relative path: sha256} from dest/MANIFEST.txt."""
-    rows = (dest / "MANIFEST.txt").read_text(encoding="utf-8").splitlines()[1:]
+def manifest(dest: Path, name: str) -> dict[str, str]:
+    """{relative path: sha256} from the manifest dest/name (first line is a header)."""
+    rows = (dest / name).read_text(encoding="utf-8").splitlines()[1:]
     return {line.split()[2]: line.split()[0] for line in rows if line.strip()}
 
 
-def check(dest: Path) -> list[str]:
-    """Files listed in the manifest that are missing or whose checksum differs."""
-    if not (dest / "MANIFEST.txt").exists():
-        return ["MANIFEST.txt"]
-    return [rel for rel, digest in manifest(dest).items()
+def check(dest: Path, name: str) -> list[str]:
+    """Files listed in the manifest `name` that are missing or whose checksum differs."""
+    if not (dest / name).exists():
+        return [name]
+    return [rel for rel, digest in manifest(dest, name).items()
             if not (dest / rel).exists() or sha256(dest / rel) != digest]
 
 
@@ -70,27 +80,29 @@ def unpack(zip_path: Path, dest: Path) -> None:
 
 
 def main(argv=None) -> int:
-    """Download and unpack unless data/ already matches the manifest; return 0 when every file checks out."""
+    """Download and unpack each part unless data/ already matches its manifest; return 0 when every file checks out."""
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--dest", default=str(Path(__file__).resolve().parents[1] / "data"), help="target folder")
-    ap.add_argument("--zip", help="use an already downloaded final_study_data.zip instead of downloading")
+    ap.add_argument("--zip-dir", help="a folder holding already downloaded zips, used instead of downloading")
     args = ap.parse_args(argv)
     dest = Path(args.dest)
-    if not check(dest):
-        print(f"{dest}: all files present and correct")
-        return 0
     dest.mkdir(parents=True, exist_ok=True)
-    zip_path = Path(args.zip) if args.zip else dest / "final_study_data.zip"
-    if not args.zip:
-        download(URL, zip_path)
-    unpack(zip_path, dest)
-    if not args.zip:
-        zip_path.unlink()
-    bad = check(dest)
-    if bad:
-        print(f"checksum mismatch or missing: {bad}")
-        return 1
-    print(f"{dest}: {len(manifest(dest))} files unpacked and checked")
+    for url, name in PARTS:
+        if not check(dest, name):
+            print(f"{name}: all files present and correct")
+            continue
+        zip_name = url.rsplit("/", 1)[1]
+        zip_path = Path(args.zip_dir) / zip_name if args.zip_dir else dest / zip_name
+        if not args.zip_dir:
+            download(url, zip_path)
+        unpack(zip_path, dest)
+        if not args.zip_dir:
+            zip_path.unlink()
+        bad = check(dest, name)
+        if bad:
+            print(f"{name}: checksum mismatch or missing: {bad}")
+            return 1
+        print(f"{name}: {len(manifest(dest, name))} files unpacked and checked")
     return 0
 
 

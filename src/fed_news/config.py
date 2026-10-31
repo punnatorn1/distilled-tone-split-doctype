@@ -1,8 +1,8 @@
 """Every setting in one place.
 
 WHERE THE DATA IS (DATA below): the folder in the environment variable FED_NEWS_DATA if set; else <repo>/data,
-which `python scripts/download_data.py` fills from this repository's release; else D:/fed_news (the author's
-machine). docs/guides/DATA.md lists every file. Results go to results/.
+which `python scripts/download_data.py` fills from the two data releases; else D:/fed_news (the author's
+machine). docs/DATA.md lists every file attempt 14 reads. Results go to results/.
 
 Details: Paths and every fixed setting of the design (spec sections 4, 6, 7, 8).
 """
