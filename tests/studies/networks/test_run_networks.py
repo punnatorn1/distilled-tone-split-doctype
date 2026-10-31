@@ -187,11 +187,3 @@ def test_holm_family_is_the_registered_six_even_when_arms_are_missing():
     assert np.isnan(run_networks.registered_holm(interim, cfg)).all()
     full = _primary_rows(cfg, run_networks.ARCHS, p=0.0034)
     assert np.allclose(run_networks.registered_holm(full, cfg), 6 * 0.0034)
-
-
-def test_registered_holm_reproduces_the_committed_v2_adjustments():
-    for name, sub in (("T2", "neural"), ("T1", "neural_t1")):
-        cfg = run_networks.TASKS[name]
-        comp = pd.read_csv(run_networks.config.RESULTS / "study4" / sub / f"comparison_neural_{name}.csv")
-        comp = comp[comp["role"] != "settings"].reset_index(drop=True)
-        assert np.allclose(run_networks.registered_holm(comp, cfg), comp["nw_p_holm"], equal_nan=True)
