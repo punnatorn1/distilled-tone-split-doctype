@@ -30,39 +30,39 @@ measurably better than the two-column single tone for any model.
 
 **Accuracy** = share of meetings where the outcome the model rated most likely is what the Fed did (higher is better). In brackets: meetings called right.
 
-| Model | Meetings tested | No news (S+M) | Fake tone (placebo) | Real tone (S+M+Hd) | Change from adding real tone |
+| Model | Meetings tested | No news | Fake tone | Real tone | Change from adding real tone |
 |---|---|---|---|---|---|
 | Ordered logit | 135 | 83.7% (113) | 83.0% (112) | 85.9% (116) | +2.2 percentage points |
-| LSTM | 134 | 76.1% (102) | 83.6% (112) | 87.3% (117) | +11.2 percentage points |
-| GRU | 134 | 76.9% (103) | 85.1% (114) | 83.6% (112) | +6.7 percentage points |
-| TFT | 134 | 88.8% (119) | 91.0% (122) | 89.6% (120) | +0.7 percentage points |
+| LSTM network | 134 | 76.1% (102) | 83.6% (112) | 87.3% (117) | +11.2 percentage points |
+| GRU network | 134 | 76.9% (103) | 85.1% (114) | 83.6% (112) | +6.7 percentage points |
+| TFT network | 134 | 88.8% (119) | 91.0% (122) | 89.6% (120) | +0.7 percentage points |
 
 **Log loss** = the mean of −ln(probability the model gave to what actually happened) (lower is better). It judges the probabilities, not just the top pick: 0.90 on the right outcome scores 0.105, 0.50 scores 0.693, 0.01 scores 4.605.
 
-| Model | Meetings tested | No news (S+M) | Fake tone (placebo) | Real tone (S+M+Hd) | Change from adding real tone |
+| Model | Meetings tested | No news | Fake tone | Real tone | Change from adding real tone |
 |---|---|---|---|---|---|
 | Ordered logit | 135 | 0.356 | 0.335 | 0.320 | -0.036 |
-| LSTM | 134 | 0.665 | 0.621 | 0.510 | -0.155 |
-| GRU | 134 | 0.560 | 0.518 | 0.451 | -0.110 |
-| TFT | 134 | 0.403 | 0.377 | 0.318 | -0.084 |
+| LSTM network | 134 | 0.665 | 0.621 | 0.510 | -0.155 |
+| GRU network | 134 | 0.560 | 0.518 | 0.451 | -0.110 |
+| TFT network | 134 | 0.403 | 0.377 | 0.318 | -0.084 |
 
-**RMSE** = root mean squared error of the forecast rate, in percentage points (lower is better).
+**Rate error** = root mean squared error (RMSE) of the forecast interest rate, in percentage points (lower is better).
 
-| Model | Meetings tested | No news (S+M) | Fake tone (placebo) | Real tone (S+M+Hd) | Change from adding real tone |
+| Model | Meetings tested | No news | Fake tone | Real tone | Change from adding real tone |
 |---|---|---|---|---|---|
 | Ordered logit | 135 | 0.1287 | 0.1283 | 0.1284 | -0.0002 |
-| LSTM | 134 | 0.1531 | 0.1429 | 0.1388 | -0.0144 |
-| GRU | 134 | 0.1486 | 0.1417 | 0.1405 | -0.0081 |
-| TFT | 134 | 0.1400 | 0.1372 | 0.1352 | -0.0048 |
+| LSTM network | 134 | 0.1531 | 0.1429 | 0.1388 | -0.0144 |
+| GRU network | 134 | 0.1486 | 0.1417 | 0.1405 | -0.0081 |
+| TFT network | 134 | 0.1400 | 0.1372 | 0.1352 | -0.0048 |
 
-**The two checks.** All p-values are one-sided. Ordered logit: Clark-West. Networks: Newey-West with 8 lags on the meeting-by-meeting log-loss difference; check 1 is Holm-adjusted over the 3 networks. A check is passed at p < 0.05.
+**The two checks.** All p-values are one-sided. Ordered logit: the Clark-West test. Networks: the Newey-West test with 8 lags on the meeting-by-meeting log-loss difference; for check 1 the p-value is Holm-adjusted over the 3 networks. A check is passed when the p-value is below 0.05.
 
 | Model | Check 1: real tone vs no news | Check 2a: real tone vs fake tone | Check 2b: fake tone vs no news | Verdict |
 |---|---|---|---|---|
-| Ordered logit (Clark-West) | p = 0.220 → not shown | not computed yet | p = 0.105 → does not (good) | not passed: not shown to beat no news (check 2a not computed) |
-| LSTM (Newey-West) | p = 0.220 (Holm; raw 0.110) → not shown | p = 0.032 → beats | p = 0.370 → does not (good) | not passed: beats the fake tone, but not shown to beat no news |
-| GRU (Newey-West) | p = 0.220 (Holm; raw 0.167) → not shown | p = 0.094 → not shown | p = 0.380 → does not (good) | not passed: neither check 1 nor check 2a |
-| TFT (Newey-West) | p = 0.0050 (Holm; raw 0.0017) → beats | p = 0.082 → not shown | p = 0.237 → does not (good) | not passed: beats no news, but not shown to beat the fake tone |
+| Ordered logit (Clark-West) | p-value 0.220 → not shown | not computed yet | p-value 0.105 → does not (good) | not passed: not shown to beat no news (check 2a not computed) |
+| LSTM network (Newey-West) | p-value 0.220 after Holm adjustment (0.110 before) → not shown | p-value 0.032 → beats | p-value 0.370 → does not (good) | not passed: beats the fake tone, but not shown to beat no news |
+| GRU network (Newey-West) | p-value 0.220 after Holm adjustment (0.167 before) → not shown | p-value 0.094 → not shown | p-value 0.380 → does not (good) | not passed: neither check 1 nor check 2a |
+| TFT network (Newey-West) | p-value 0.0050 after Holm adjustment (0.0017 before) → beats | p-value 0.082 → not shown | p-value 0.237 → does not (good) | not passed: beats no news, but not shown to beat the fake tone |
 
 ### Ordered logit from 2010 (135 meetings), every arm
 

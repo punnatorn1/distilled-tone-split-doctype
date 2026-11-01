@@ -24,6 +24,7 @@ def test_results_tables_in_docs_match_results():
 def test_readme_headline_tables_are_generated():
     text = (REPO / "README.md").read_text(encoding="utf-8")
     assert "<!-- headline:start" in text and "<!-- headline:end -->" in text
+    assert "<!-- lookback:start" in text and "<!-- lookback:end -->" in text
 
 
 def test_verdict_needs_both_checks():
