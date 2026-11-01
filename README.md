@@ -352,6 +352,22 @@ minus the Fed's current rate. A positive spread means the market expects hikes w
 | 23 | `m_vix` | the stock market's expected volatility over the next 30 days (the VIX "fear index") | VIXCLS | index points |
 | 24 | `m_wti` | the price of US crude oil (West Texas Intermediate) | DCOILWTICO | dollars a barrel |
 
+**When the market data are taken: before the meeting even starts.** A Fed meeting lasts two days, and the decision is
+announced on the second day. The cutoff is one day before the announcement, so it falls on the first day of the
+meeting. Each market number is the last value dated **strictly before** the cutoff (the code keeps only earlier dates:
+`asof` in `src/fed_news/download/fred_market.py`). Example for the decision of 16 March 2022:
+
+| Date | What happened |
+|---|---|
+| 14 March 2022 | the last market values the model sees |
+| 15 March 2022 | the cutoff: day 1 of the meeting |
+| 16 March 2022 | the decision is announced: day 2 of the meeting |
+
+So the market data are two days older than the announcement. The economic data follow the same rule: only versions
+published before the cutoff. The market numbers do already contain the market's **expectation** of this meeting's
+decision (a 3-month bill yield already prices in a likely hike). That is allowed, because it was known before the
+announcement, and it is the reason the market data are so strong and the tone finds it hard to add anything.
+
 **Tone (2 numbers).** Made by the distilled reader (section 5).
 
 | # | Code name | What it is | Unit |
@@ -412,6 +428,23 @@ reads the last few check-ups: that is the look-back.
 mostly chose 2 or 4 meetings (about 6 weeks to 4.5 months). A look-back of 12 meetings was never chosen. The chosen
 value jumps between periods (the TFT network with real tone goes 4, 4, 2, 8, 2) because there are so few meetings
 that tuning is unstable.
+
+**Who chooses the look-back?** Not the network itself while it learns, and not us by hand. The automatic search
+(the Optuna library) chooses it **before** the network is trained, together with the other settings:
+
+1. We fix the choices: 2, 4, 8 or 12 meetings (`run_networks.py` in `src/fed_news/studies/networks/`). The search can
+   only pick from these four.
+2. At each tuning point, the search proposes one complete setting: look-back, memory size, dropout, learning rate,
+   weight decay, batch size, and the number of layers (or attention heads for the TFT network).
+3. The network is trained with that setting on meetings before the tuning point only, and scored by log loss on 4
+   time-ordered splits.
+4. This is repeated 20 times. Each new proposal is made near the settings that scored well so far.
+5. The setting with the lowest average log loss wins, and its look-back is used for every forecast until the next
+   tuning point.
+
+*Analogy: a cook tries 20 recipes on last year's customers, then uses the best one for the whole of next year.*
+Because the look-back is chosen together with all the other settings, from only 20 tries and few meetings, the chosen
+value is partly luck. That is why it jumps between periods.
 
 ### 4.5 Worked example: what the forecast for 16 March 2022 knew
 
