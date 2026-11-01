@@ -111,11 +111,13 @@ the next by $m - 1$, and so on (never letting an adjusted value fall below the p
 
 | Test | Holm over |
 |---|---|
-| ordered logit, S+M+Hs vs S+M from 2010 | 1 (a single primary test, no adjustment) |
-| networks, S+M+Hs vs S+M from 2010 | 3 (LSTM, GRU, TFT) |
+| ordered logit, S+M+Hd vs S+M from 2010 (attempt 12) | 1 (a single primary test, no adjustment) |
+| networks, S+M+Hd vs S+M from 2010 (attempt 12b) | 3 (LSTM, GRU, TFT) |
+| ordered logit, S+M+Hs vs S+M from 2010 (attempt 14) | 1 (a single primary test, no adjustment) |
+| networks, S+M+Hs vs S+M from 2010 (attempt 14b) | 3 (LSTM, GRU, TFT) |
 
-**Holm cannot fix trying many attempts.** It corrects within one attempt. Attempt 14 is the 14th attempt of this
-project, which Holm does not account for; that is why every attempt is reported in
+**Holm cannot fix trying many attempts.** It corrects within one attempt. Hd is the 12th and Hs the 14th attempt of
+this project, which Holm does not account for; that is why every attempt is reported in
 [`results/ATTEMPTS.md`](../results/ATTEMPTS.md).
 
 Code: `src/fed_news/evaluation/significance.py` (`holm`).

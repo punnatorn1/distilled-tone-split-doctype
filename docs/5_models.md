@@ -3,8 +3,9 @@
 [Back to the README](../README.md) · Previous: [4. What each forecast sees](4_what_each_forecast_sees.md) · Next:
 [6. Tests and controls](6_tests_and_controls.md)
 
-The **ordered logit** is the primary model of attempt 14 (its test was fixed before the run). The three networks are
-attempt 14b, a declared secondary test.
+The README's main result shows all four models side by side with the single tone Hd. In the pre-registered designs
+of both attempts (12 for Hd, 14 for Hs) the **ordered logit** was the primary model (its test was fixed before the
+run) and the three networks (12b, 14b) a declared secondary test.
 
 ## 5.1 The ordered logit, step by step
 

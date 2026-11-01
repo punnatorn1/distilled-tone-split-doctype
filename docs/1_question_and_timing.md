@@ -15,8 +15,10 @@ Before each FOMC meeting we ask: **will the Fed cut, hold or hike?** Then we ask
 the Fed itself said or wrote (hawkish or dovish) makes that forecast better than using economic statistics and market
 prices alone.
 
-Attempt 14 asks a sharper version: does the tone help **when it is kept split by the kind of document it came from**
-(policy statements and press conferences, minutes, speeches), instead of being averaged into one number?
+The main result of this repository uses the **single tone Hd** (attempt 12): one averaged tone per meeting and its
+change, tested with all four models side by side. A secondary result, attempt 14, asks a sharper version: does the
+tone help **when it is kept split by the kind of document it came from** (policy statements and press conferences,
+minutes, speeches), instead of being averaged into one number?
 
 ## 1.2 The target
 
@@ -48,7 +50,7 @@ and the docs lead with log loss (chapter 6).
 - **260 meetings** have every input, from 1995-03-28 to 2026-09-16.
 - **Test periods** (the meetings that are scored):
   - full period: 212 meetings from 2001-01-03;
-  - from 2010: 135 meetings from 2010-01-27 (the **primary** period for attempt 14);
+  - from 2010: 135 meetings from 2010-01-27 (the **primary** period for both Hd and Hs);
   - the networks are scored on scheduled meetings only: 206 (full) and 134 (from 2010).
 - Meetings before 2001 are only ever used for training.
 
