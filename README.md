@@ -661,6 +661,7 @@ What needs more than an ordinary processor:
 | [6. Tests and controls](docs/6_tests_and_controls.md) | log loss, Clark-West, Newey-West, Holm, fake tone and shuffled-outcome controls |
 | [7. Results](docs/7_results.md) | every result table for both tones, generated from `results/` |
 | [8. Limits](docs/8_limits.md) | what can and cannot be said |
+| [9. Data splits](docs/9_data_splits.md) | training, validation and test: every split with real dates, why not 60/20/20, independent review of the time-series setup |
 | [Code map](docs/CODE_MAP.md) | every step, its file, its function and its output |
 | [Data](docs/DATA.md) | every data file, its columns and checksum |
 | [Glossary](docs/GLOSSARY.md) | every code name and symbol |
